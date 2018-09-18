@@ -96,6 +96,7 @@ print('Total affiliates retrieved: ' + str(len(idData)))
 afData = get_auth_data(idData)
 print('Total author affiliations retrieved: ' + str(len(afData)))
 
+#TODO: write function to explode hideous affiliation data, maybe normalize
 
 with open('author_affiliation_data.csv', 'w', newline='', encoding = 'utf-8') as f:
 	writer = csv.writer(f)
