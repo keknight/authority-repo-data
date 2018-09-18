@@ -36,7 +36,7 @@ def get_ornl_affiliates():
 	start = list(firstn(int(amt)))
 	
 	i = 0
-	while i < len(start[:2]):
+	while i < len(start):
 		resp = requests.get(url + str(start[i]) + query, headers = headers)
 		auth_data = resp.json()
 		with open('AUTHOR_ID_FILE', mode='a', encoding = 'utf-8') as fjson:
@@ -85,16 +85,16 @@ def get_auth_data(auth_ids):
 				j += 1
 		except KeyError: 
 			pass
-		auth_affs.append([fName, lname, initials, indName, orgData])
+		auth_affs.append([fName, lName, initials, indName, orgData])
 		i += 1
 		
 	return auth_affs
 
 
 idData = get_ornl_affiliates()
-print('Total affiliates retrieved: ' + str(len(idData))
+print('Total affiliates retrieved: ' + str(len(idData)))
 afData = get_auth_data(idData)
-print('Total author affiliations retrieved: ' + str(len(afData))
+print('Total author affiliations retrieved: ' + str(len(afData)))
 
 
 with open('author_affiliation_data.csv', 'w', newline='', encoding = 'utf-8') as f:
