@@ -92,9 +92,9 @@ def get_auth_data(auth_ids):
 
 
 idData = get_ornl_affiliates()
-print('Total affiliates retrieved: ' + len(idData))
+print('Total affiliates retrieved: ' + str(len(idData)))
 afData = get_auth_data(idData)
-print('Total author affiliations retrieved: ' + len(afData))
+print('Total author affiliations retrieved: ' + str(len(afData)))
 
 
 with open('author_affiliation_data.csv', 'w', newline='', encoding = 'utf-8') as f:
