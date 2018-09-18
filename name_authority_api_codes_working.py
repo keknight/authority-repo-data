@@ -1,3 +1,7 @@
+
+
+####TO DO: COMBINE THIS FILE WITH OTHER SCOPUS API FILES INTO LOCAL LIBRARY#########
+
 import pandas as pd
 from pandas_datareader import wb
 import requests
