@@ -42,12 +42,12 @@ def get_ornl_affiliates():
 		with open('AUTHOR_ID_FILE', mode='a', encoding = 'utf-8') as fjson:
 			json.dump(auth_data['search-results']['entry'], fjson)
 		for item in auth_data['search-results']['entry']:
-			fName = item['preferred-name']['given-name']^M
-			lName = item['preferred-name']['surname']^M
-			orcid = item.get('orcid', 'no orcid listed')^M
-			eid = item.get('eid', 'no eid')^M
-			id = item.get('dc:identifier', 'no identifier')^M
-			docs = item.get('document-count', 'no docs listed')^M
+			fName = item['preferred-name']['given-name']
+			lName = item['preferred-name']['surname']
+			orcid = item.get('orcid', 'no orcid listed')
+			eid = item.get('eid', 'no eid')
+			id = item.get('dc:identifier', 'no identifier')
+			docs = item.get('document-count', 'no docs listed')
 			auth_ids.append([fName, lName, orcid, eid, id, docs])
 		i += 1
 	return auth_ids
