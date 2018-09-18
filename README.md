@@ -1,2 +1,2 @@
 # authority-repo-data
-spot for naf scripts I'm working on
+Repo to save various codes for getting Scopus data for Name Authority (files will eventually become a local library)
