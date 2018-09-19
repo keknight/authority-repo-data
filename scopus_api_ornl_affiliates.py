@@ -5,52 +5,13 @@ import csv
 import requests
 import json
 
+from Utility import append_to_json, flatten_json, firstn
 
 #edit .env file to include your Elsevier API key and institutional EID
 inst_EID = config('INSTITUTION_EID')
 myKey = config('ELSEVIER_SECRET_KEY')
 headers = {'accept':'application/json', 'x-els-apikey':myKey}
 
-
-#helper function to append json to file as valid json
-def append_to_json(_dict,path): 
-    with open(path, 'ab+') as f:
-		f.seek(0,2)                            	       	#Go to the end of file    
-		if f.tell() == 0 :                             	#Check if file is empty
-			f.write(json.dumps([_dict]).encode())  		#If empty, write an array
-		else :
-			f.seek(-1,2)           
-			f.truncate()                           		#Remove the last character, open the array
-			f.write(' , '.encode())                		#Write the separator
-			f.write(json.dumps(_dict).encode())    		#Dump the dictionary
-			f.write(']'.encode())                  		#Close the array
-
-
-#function to flatten json output from Scopus
-def flatten_json(y):
-	out = {}
-	def flatten(x, name = ''):
-		if type(x) is dict:
-			for a in x:
-				flatten(x[a], name + a + '_')
-		elif type(x) is list:
-			i = 0
-			for a in x:
-				flatten(a, name)
-				i += 1
-		else:
-			out[name[:-1]] = x
-	flatten(y)
-	return out
-	
-			
-#creates a generator 
-def firstn(n):
-	num = 0
-	while num < n:
-		yield num
-		num += 25
-	
 
 #get ORNL affiliation EIDs
 #raw data saved as json file in case api cuts out
