@@ -21,10 +21,6 @@ def get_ornl_affiliates():
 	
 	auth_ids = []
 	
-	#Initialize json file
-	with open('AUTHOR_ID_FILE', mode='w', encoding='utf-8') as f:
-		json.dump({}, f)
-		
 	url = 'https://api.elsevier.com/content/search/author?start='
 	
 	#the query is for ORNL's ID in Scopus
@@ -39,8 +35,8 @@ def get_ornl_affiliates():
 	while i < len(start):
 		resp = requests.get(url + str(start[i]) + query, headers = headers)
 		auth_data = resp.json()
-		with open('AUTHOR_ID_FILE', mode='a', encoding = 'utf-8') as fjson:
-			json.dump(auth_data['search-results']['entry'], fjson)
+		with open('AUTHOR_ID_FILE', mode='a', encoding = 'utf-8') as f:
+			json.dump(auth_data['search-results']['entry'], f)
 		for item in auth_data['search-results']['entry']:
 			fName = item['preferred-name']['given-name']
 			lName = item['preferred-name']['surname']
@@ -57,17 +53,14 @@ def get_auth_data(auth_ids):
 
 	auth_affs = []
 	
-	with open('AUTHOR_AFFIL_FILE', mode='w', encoding='utf-8') as f:
-		json.dump({}, f)
-
 	url = 'http://api.elsevier.com/content/author/author_id/'
 
 	i = 0	
 	while i < len(auth_ids):
 		resp = requests.get(url + auth_ids[i][4].split(':')[1], headers = headers)
 		auth_data = resp.json()
-		with open('AUTHOR_AFFIL_FILE', mode='a', encoding = 'utf-8') as fjson:
-			json.dump(auth_data['author-retrieval-response'], fjson)
+		with open('AUTHOR_AFFIL_FILE', mode='a', encoding = 'utf-8') as f:
+			json.dump(auth_data, f)
 		fName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['given-name']
 		lName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['surname']
 		initials = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['initials']
