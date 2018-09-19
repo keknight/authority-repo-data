@@ -6,7 +6,17 @@ import json
 myKey = 'ENTER SCOPUS API KEY'
 headers = {'accept':'application/json', 'x-els-apikey':myKey}
 
-
+def append_to_json(_dict,path): 
+    with open(path, 'ab+') as f:
+		f.seek(0,2)                            	       #Go to the end of file    
+		if f.tell() == 0 :                             #Check if file is empty
+			f.write(json.dumps([_dict]).encode())  #If empty, write an array
+		else :
+			f.seek(-1,2)           
+			f.truncate()                           #Remove the last character, open the array
+			f.write(' , '.encode())                #Write the separator
+			f.write(json.dumps(_dict).encode())    #Dump the dictionary
+			f.write(']'.encode())                  #Close the array
 
 #creates a generator 
 def firstn(n):
@@ -35,8 +45,7 @@ def get_ornl_affiliates():
 	while i < len(start):
 		resp = requests.get(url + str(start[i]) + query, headers = headers)
 		auth_data = resp.json()
-		with open('AUTHOR_ID_FILE', mode='a', encoding = 'utf-8') as f:
-			json.dump(auth_data['search-results']['entry'], f)
+		append_to_json(auth_data, 'AUTHOR_EID_FILE.json')
 		for item in auth_data['search-results']['entry']:
 			fName = item['preferred-name']['given-name']
 			lName = item['preferred-name']['surname']
@@ -59,8 +68,7 @@ def get_auth_data(auth_ids):
 	while i < len(auth_ids):
 		resp = requests.get(url + auth_ids[i][4].split(':')[1], headers = headers)
 		auth_data = resp.json()
-		with open('AUTHOR_AFFIL_FILE', mode='a', encoding = 'utf-8') as f:
-			json.dump(auth_data, f)
+		append_to_json(auth_data, AUTHOR_AFFIL_FILE')
 		fName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['given-name']
 		lName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['surname']
 		initials = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['initials']
