@@ -4,12 +4,14 @@ import csv
 import requests
 import json
 
+
 #TODO: add .env file to use decouple/config to manage env variables
 #enter your Scopus api key in myKey
 myKey = 'ENTER SCOPUS API KEY'
 headers = {'accept':'application/json', 'x-els-apikey':myKey}
 
 
+#helper function to append json to file as valid json
 def append_to_json(_dict,path): 
     with open(path, 'ab+') as f:
 		f.seek(0,2)                            	       	#Go to the end of file    
@@ -50,6 +52,7 @@ def firstn(n):
 	
 
 #get ORNL affiliation EIDs
+#raw data saved as json file in case api cuts out
 #TODO: change function to take any institution Scopus ID
 def get_ornl_affiliates():
 	
@@ -83,6 +86,7 @@ def get_ornl_affiliates():
 
 
 #get author data based on retrieved EIDs
+#raw data saved as json file in case api cuts out
 def get_auth_data(auth_ids):
 
 	auth_affs = []
@@ -127,7 +131,8 @@ print('Total affiliates retrieved: ' + str(len(idData)))
 afData = get_auth_data(idData)
 print('Total authors searched: ' + str(len(afData)))
 
-#TODO: write function to explode hideous org data, maybe normalize
+##write affiliation data to flat file
+##todo: write to sqlite or MongoDB
 
 with open('author_affiliation_data.csv', 'w', newline='', encoding = 'utf-8') as f:
 	writer = csv.writer(f)
