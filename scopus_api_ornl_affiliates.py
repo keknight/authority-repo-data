@@ -1,23 +1,46 @@
+
+#from decouple import config
 import csv
 import requests
 import json
 
+#TODO: add .env file to use decouple/config to manage env variables
 #enter your Scopus api key in myKey
 myKey = 'ENTER SCOPUS API KEY'
 headers = {'accept':'application/json', 'x-els-apikey':myKey}
 
+
 def append_to_json(_dict,path): 
     with open(path, 'ab+') as f:
-		f.seek(0,2)                            	       #Go to the end of file    
-		if f.tell() == 0 :                             #Check if file is empty
-			f.write(json.dumps([_dict]).encode())  #If empty, write an array
+		f.seek(0,2)                            	       	#Go to the end of file    
+		if f.tell() == 0 :                             	#Check if file is empty
+			f.write(json.dumps([_dict]).encode())  		#If empty, write an array
 		else :
 			f.seek(-1,2)           
-			f.truncate()                           #Remove the last character, open the array
-			f.write(' , '.encode())                #Write the separator
-			f.write(json.dumps(_dict).encode())    #Dump the dictionary
-			f.write(']'.encode())                  #Close the array
+			f.truncate()                           		#Remove the last character, open the array
+			f.write(' , '.encode())                		#Write the separator
+			f.write(json.dumps(_dict).encode())    		#Dump the dictionary
+			f.write(']'.encode())                  		#Close the array
 
+
+#function to flatten json output from Scopus
+def flatten_json(y):
+	out = {}
+	def flatten(x, name = ''):
+		if type(x) is dict:
+			for a in x:
+				flatten(x[a], name + a + '_')
+		elif type(x) is list:
+			i = 0
+			for a in x:
+				flatten(a, name)
+				i += 1
+		else:
+			out[name[:-1]] = x
+	flatten(y)
+	return out
+	
+			
 #creates a generator 
 def firstn(n):
 	num = 0
@@ -27,6 +50,7 @@ def firstn(n):
 	
 
 #get ORNL affiliation EIDs
+#TODO: change function to take any institution Scopus ID
 def get_ornl_affiliates():
 	
 	auth_ids = []
@@ -57,6 +81,7 @@ def get_ornl_affiliates():
 		i += 1
 	return auth_ids
 
+
 #get author data based on retrieved EIDs
 def get_auth_data(auth_ids):
 
@@ -74,15 +99,20 @@ def get_auth_data(auth_ids):
 		initials = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['initials']
 		indName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['indexed-name']
 		try: 
-			affName = auth_data['author-retrieval-response'][0]['author-profile']['affiliation-history']['affiliation']
+			affName = flatten_json(auth_data['author-retrieval-response'][0]['author-profile']['affiliation-history']['affiliation'])
 			j = 0
 			orgData = []
 			while j < len(affName):
-				address = affName[j]['ip-doc']['address']
-				orgName = affName[j]['ip-doc']['preferred-name']
-				sortName = affName[j]['ip-doc']['sort-name']
-				orgId = affName[j]['ip-doc']['@id']
-				orgData.append([address, orgName, sortName, orgId])
+				address = affName['ip-doc_address_address-part']
+				orgCity = affName['ip-doc_address_city']
+				orgAbb = affName['ip-doc_afdispname']
+				orgName = affName['ip-doc_preferred-name_$']
+				sortName = affName['ip-doc_sort-name']
+				orgState = affName['ip-doc_address_state']
+				orgCount = affName['ip-doc_address_country']
+				orgZip = affName['ip-doc_address_postal-code']
+				orgId = affName['ip-doc_@id']
+				orgData.append([orgAbb, orgName, sortName, orgAddress, orgCity, orgCount, orgState, orgId])
 				j += 1
 		except KeyError: 
 			pass
