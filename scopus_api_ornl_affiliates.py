@@ -68,7 +68,7 @@ def get_auth_data(auth_ids):
 	while i < len(auth_ids):
 		resp = requests.get(url + auth_ids[i][4].split(':')[1], headers = headers)
 		auth_data = resp.json()
-		append_to_json(auth_data, AUTHOR_AFFIL_FILE')
+		append_to_json(auth_data, 'AUTHOR_AFFIL_FILE.json')
 		fName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['given-name']
 		lName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['surname']
 		initials = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['initials']
