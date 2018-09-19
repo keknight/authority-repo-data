@@ -1,9 +1,9 @@
 #!Python 3.5
 
-from decouple import config
-import csv
-import requests
 import json
+from decouple import config
+import requests
+import pandas as pd
 
 from Utility import append_to_json, flatten_json, firstn
 
@@ -64,21 +64,18 @@ def get_auth_data(auth_ids):
 		initials = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['initials']
 		indName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['indexed-name']
 		try: 
-			affName = flatten_json(auth_data['author-retrieval-response'][0]['author-profile']['affiliation-history']['affiliation'])
-			j = 0
 			orgData = []
-			while j < len(affName):
-				address = affName['ip-doc_address_address-part']
-				orgCity = affName['ip-doc_address_city']
-				orgAbb = affName['ip-doc_afdispname']
-				orgName = affName['ip-doc_preferred-name_$']
-				sortName = affName['ip-doc_sort-name']
-				orgState = affName['ip-doc_address_state']
-				orgCount = affName['ip-doc_address_country']
-				orgZip = affName['ip-doc_address_postal-code']
-				orgId = affName['ip-doc_@id']
+			for item in auth_data['author-retrieval-response'][0]['author-profile']['affiliation-history']['affiliation']:
+				orgAddress = affName.get('ip-doc_address_address-part', 'n/a')
+				orgCity = affName.get('ip-doc_address_city', 'n/a')
+				orgAbb = affName.get('ip-doc_afdispname', 'n/a')
+				orgName = affName.get('ip-doc_preferred-name_$', 'n/a')
+				sortName = affName.get('ip-doc_sort-name', 'n/a')
+				orgState = affName.get('ip-doc_address_state', 'n/a')
+				orgCount = affName.get('ip-doc_address_country', 'n/a')
+				orgZip = affName.get('ip-doc_address_postal-code', 'n/a')
+				orgId = affName.get('ip-doc_@id', 'n/a')
 				orgData.append([orgAbb, orgName, sortName, orgAddress, orgCity, orgCount, orgState, orgId])
-				j += 1
 		except KeyError: 
 			pass
 		auth_affs.append([fName, lName, initials, indName, orgData])
