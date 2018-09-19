@@ -93,6 +93,8 @@ print('Total authors searched: ' + str(len(afData)))
 ##write affiliation data to flat file
 ##todo: write to sqlite or MongoDB
 
+
+##todo: change this to pandas dataframe, explode orgData list
 with open('author_affiliation_data.csv', 'w', newline='', encoding = 'utf-8') as f:
 	writer = csv.writer(f)
 	i = 0
