@@ -1,13 +1,14 @@
+#!Python 3.5
 
-#from decouple import config
+from decouple import config
 import csv
 import requests
 import json
 
 
-#TODO: add .env file to use decouple/config to manage env variables
-#enter your Scopus api key in myKey
-myKey = 'ENTER SCOPUS API KEY'
+#edit .env file to include your Elsevier API key and institutional EID
+inst_EID = config('INSTITUTION_EID')
+myKey = config('ELSEVIER_SECRET_KEY')
 headers = {'accept':'application/json', 'x-els-apikey':myKey}
 
 
@@ -53,15 +54,14 @@ def firstn(n):
 
 #get ORNL affiliation EIDs
 #raw data saved as json file in case api cuts out
-#TODO: change function to take any institution Scopus ID
 def get_ornl_affiliates():
 	
 	auth_ids = []
 	
 	url = 'https://api.elsevier.com/content/search/author?start='
 	
-	#the query is for ORNL's ID in Scopus
-	query = '&query=AF-ID%2860024266%29'
+	#the query is for all affiliates of an institution using the inst. Scopus EID
+	query = '&query=AF-ID%28' + inst_EID + '%29'
 	
 	resp = requests.get(url + '0' + query, headers = headers)
 	amt = resp.json()['search-results']['opensearch:totalResults']
