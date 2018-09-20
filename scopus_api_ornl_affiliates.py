@@ -5,7 +5,7 @@ from decouple import config
 import requests
 import pandas as pd
 
-from Utility import append_to_json, flatten_json, firstn
+from Utility import append_to_json, flatten_json, firstn, append_df_to_excel
 
 #edit .env file to include your Elsevier API key and institutional EID
 inst_EID = config('INSTITUTION_EID')
@@ -76,8 +76,8 @@ def get_auth_data(auth_ids):
 				orgCount = affName.get('ip-doc_address_country', 'n/a')
 				orgZip = affName.get('ip-doc_address_postal-code', 'n/a')
 				orgId = affName.get('ip-doc_@id', 'n/a')
-				orgData.append([orgAbb, orgName, sortName, orgAddress, orgCity, orgCount, orgState, orgId])
-		except KeyError: 
+				orgData.append([orgAbb, orgName, sortName, orgAddress, orgCity, orgCount, orgState, orgId][:])
+		except (KeyError, AttributeError, TypeError): 
 			pass
 		auth_affs.append([fName, lName, initials, indName, orgData])
 		i += 1

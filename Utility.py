@@ -42,3 +42,34 @@ def firstn(n):
 	while num < n:
 		yield num
 		num += 25
+
+		
+#function to append dataframe to Excel file
+def append_df_to_excel(filename, df, sheet_name='Sheet1', startrow=None, **to_excel_kwargs):
+
+	from openpyxl import load_workbook
+
+    # ignore [engine] parameter if it was passed
+	if 'engine' in to_excel_kwargs:
+		to_excel_kwargs.pop('engine')
+
+	writer = pd.ExcelWriter(filename, engine='openpyxl')
+
+	try:
+        # try to open an existing workbook
+		writer.book = load_workbook(filename)
+        # get the last row in the existing Excel sheet
+		if not startrow and sheet_name in writer.book.sheetnames:
+			startrow = writer.book[sheet_name].max_row
+
+        # copy existing sheets
+		writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
+	except FileNotFoundError:
+        # file does not exist yet
+		pass
+
+	if not startrow:
+		startrow = 0
+
+	df.to_excel(writer, sheet_name, startrow=startrow, **to_excel_kwargs)
+	writer.save()
