@@ -7,10 +7,13 @@ import pandas as pd
 
 from Utility import append_to_json, flatten_json, firstn, append_df_to_excel
 
-#edit .env file to include your Elsevier API key and institutional EID
+#edit .env file to include your Elsevier API key, institutional EID, and path to your data file
 inst_EID = config('INSTITUTION_EID')
 myKey = config('ELSEVIER_SECRET_KEY')
+dataFile = config('DATA_FILE')
+
 headers = {'accept':'application/json', 'x-els-apikey':myKey}
+
 
 
 #get ORNL affiliation EIDs
@@ -47,7 +50,8 @@ def get_ornl_affiliates():
 
 
 #get author data based on retrieved EIDs
-#raw data saved as json file in case api cuts out
+#raw data saved as json file 
+#processed data written to Excel file for each api call
 def get_auth_data(auth_ids):
 
 	auth_affs = []
@@ -56,13 +60,15 @@ def get_auth_data(auth_ids):
 
 	i = 0	
 	while i < len(auth_ids):
-		resp = requests.get(url + auth_ids[i][4].split(':')[1], headers = headers)
+		eid = auth_ids[i][4].split(':')[1]
+		resp = requests.get(url + eid, headers = headers)
 		auth_data = resp.json()
 		append_to_json(auth_data, 'AUTHOR_AFFIL_FILE.json')
 		fName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['given-name']
 		lName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['surname']
 		initials = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['initials']
 		indName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['indexed-name']
+		affCur = auDat['author-retrieval-response'][0]['author-profile']['affiliation-current']['affiliation']['ip-doc'].get('afdispname', 'no listed current affiliation')
 		try: 
 			orgData = []
 			for item in auth_data['author-retrieval-response'][0]['author-profile']['affiliation-history']['affiliation']:
@@ -80,6 +86,13 @@ def get_auth_data(auth_ids):
 		except (KeyError, AttributeError, TypeError): 
 			pass
 		auth_affs.append([fName, lName, initials, indName, orgData])
+		orgData = [list(map(lambda orgData: orgData + ' | ', org)) for org in orgData] #adding delimiters
+		columns = ['EID', 'First Name', 'Last Name', 'Initials', 'Whole Name', 'Current Affiliation', 'Affiliation History']
+		data = pd.DataFrame({'EID': [eid], 'First Name': [fName], 'Last Name':[lName], 'Initials':[initials], 'Whole Name': [indName], 'Current Affiliation':[affCur]})
+		data = data.reindex(columns = columns)
+		data = data.astype('object')
+		data.at[0, 'Affiliation History'] = orgData
+		append_df_to_excel(dataFile, data)
 		i += 1
 		
 	return auth_affs
@@ -92,12 +105,3 @@ print('Total authors searched: ' + str(len(afData)))
 
 ##write affiliation data to flat file
 ##todo: write to sqlite or MongoDB
-
-
-##todo: change this to pandas dataframe, explode orgData list
-with open('author_affiliation_data.csv', 'w', newline='', encoding = 'utf-8') as f:
-	writer = csv.writer(f)
-	i = 0
-	while i < len(afData):
-		writer.writerow(afData[i])
-		i += 1
