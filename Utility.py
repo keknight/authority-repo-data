@@ -75,3 +75,11 @@ def append_df_to_excel(filename, df, sheet_name='Sheet1', startrow=None, **to_ex
 
 	df.to_excel(writer, sheet_name, startrow=startrow, **to_excel_kwargs)
 	writer.save()
+	
+#get country data from pandas_datareader (World Bank data)
+#writes directly to Excel file
+def get_country_data:
+	country_data = wb.get_countries().fillna('none')
+	writer = pd.ExcelWriter('World_Bank_country_data.xlsx')
+	country_data.to_excel(writer, 'Country Data')
+	writer.save()

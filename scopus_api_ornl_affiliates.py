@@ -17,14 +17,15 @@ headers = {'accept':'application/json', 'x-els-apikey':myKey}
 
 
 #get ORNL affiliation EIDs
-#raw data saved as json file in case api cuts out
+#raw data saved as json file
+#returns a list
 def get_ornl_affiliates():
 	
 	auth_ids = []
 	
 	url = 'https://api.elsevier.com/content/search/author?start='
 	
-	#the query is for all affiliates of an institution using the inst. Scopus EID
+	#the query is for all affiliates of an institution using the institution's Scopus EID
 	query = '&query=AF-ID%28' + inst_EID + '%29'
 	
 	resp = requests.get(url + '0' + query, headers = headers)
@@ -51,7 +52,8 @@ def get_ornl_affiliates():
 
 #get author data based on retrieved EIDs
 #raw data saved as json file 
-#processed data written to Excel file for each api call
+#processed data written to Excel file for each eid looked up
+#returns a list
 def get_auth_data(auth_ids):
 
 	auth_affs = []
