@@ -43,9 +43,9 @@ def get_ornl_affiliates():
 			lName = item['preferred-name']['surname']
 			orcid = item.get('orcid', 'no orcid listed')
 			eid = item.get('eid', 'no eid')
-			id = item.get('dc:identifier', 'no identifier')
+			alt_eid = item.get('dc:identifier', 'no identifier')
 			docs = item.get('document-count', 'no docs listed')
-			auth_ids.append([fName, lName, orcid, eid, id, docs])
+			auth_ids.append([fName, lName, orcid, eid, alt_eid, docs])
 		i += 1
 	return auth_ids
 
@@ -70,7 +70,7 @@ def get_auth_data(auth_ids):
 		lName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['surname']
 		initials = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['initials']
 		indName = auth_data['author-retrieval-response'][0]['author-profile']['preferred-name']['indexed-name']
-		affCur = auDat['author-retrieval-response'][0]['author-profile']['affiliation-current']['affiliation']['ip-doc'].get('afdispname', 'no listed current affiliation')
+		affCur = auth_data['author-retrieval-response'][0]['author-profile']['affiliation-current']['affiliation']['ip-doc'].get('afdispname', 'no listed current affiliation')
 		try: 
 			orgData = []
 			for item in auth_data['author-retrieval-response'][0]['author-profile']['affiliation-history']['affiliation']:
