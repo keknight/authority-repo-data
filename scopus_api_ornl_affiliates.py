@@ -89,11 +89,13 @@ def get_auth_data(auth_ids):
 				orgData.append([orgAbb, orgName, sortName, orgAddress, orgCity, orgCount, orgState, orgId][:])
 		except (KeyError, AttributeError, TypeError): 
 			pass
+			
 		auth_affs.append([fName, lName, initials, indName, orgData])
 		orgData = [list(map(lambda orgData: orgData + ' | ', org)) for org in orgData] #adding delimiters
-		#create dataframe
+		
+		#create dataframe, write to excel
 		columns = ['EID', 'First Name', 'Last Name', 'Initials', 'Indexed Name', 'Current Affiliation', 'Affiliation History', 'Pubs in Scopus']
-		data = pd.DataFrame.from_records({'EID': [eid], 'First Name': [fName], 'Last Name':[lName], 'Initials':[initials], 'Indexed Name': [indName], 'Current Affiliation':[affCur], 'Pubs in Scopus':[pubs]})
+		data = pd.DataFrame({'EID': [eid], 'First Name': [fName], 'Last Name':[lName], 'Initials':[initials], 'Indexed Name': [indName], 'Current Affiliation':[affCur], 'Pubs in Scopus':[pubs]})
 		data = data.reindex(columns = columns)
 		data = data.astype('object')
 		data.at[0, 'Affiliation History'] = orgData
