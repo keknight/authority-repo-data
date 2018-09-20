@@ -63,6 +63,8 @@ def get_auth_data(auth_ids):
 	i = 0	
 	while i < len(auth_ids):
 		eid = auth_ids[i][4].split(':')[1]
+		pubs = auth_ids[i][-1]
+		orcid = auth_ids[i][2]
 		resp = requests.get(url + eid, headers = headers)
 		auth_data = resp.json()
 		append_to_json(auth_data, 'AUTHOR_AFFIL_FILE.json')
@@ -89,12 +91,13 @@ def get_auth_data(auth_ids):
 			pass
 		auth_affs.append([fName, lName, initials, indName, orgData])
 		orgData = [list(map(lambda orgData: orgData + ' | ', org)) for org in orgData] #adding delimiters
-		columns = ['EID', 'First Name', 'Last Name', 'Initials', 'Whole Name', 'Current Affiliation', 'Affiliation History']
-		data = pd.DataFrame({'EID': [eid], 'First Name': [fName], 'Last Name':[lName], 'Initials':[initials], 'Whole Name': [indName], 'Current Affiliation':[affCur]})
+		#create dataframe
+		columns = ['EID', 'First Name', 'Last Name', 'Initials', 'Indexed Name', 'Current Affiliation', 'Affiliation History', 'Pubs in Scopus']
+		data = pd.DataFrame.from_records({'EID': [eid], 'First Name': [fName], 'Last Name':[lName], 'Initials':[initials], 'Indexed Name': [indName], 'Current Affiliation':[affCur], 'Pubs in Scopus':[pubs]})
 		data = data.reindex(columns = columns)
 		data = data.astype('object')
 		data.at[0, 'Affiliation History'] = orgData
-		append_df_to_excel(dataFile, data)
+		append_df_to_excel(dataFile, data, index = False)
 		i += 1
 		
 	return auth_affs
