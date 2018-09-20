@@ -66,7 +66,7 @@ def get_auth_data(auth_ids):
 		try: 
 			orgData = []
 			for item in auth_data['author-retrieval-response'][0]['author-profile']['affiliation-history']['affiliation']:
-				affname = flatten_json(item)
+				affName = flatten_json(item)
 				orgAddress = affName.get('ip-doc_address_address-part', 'n/a')
 				orgCity = affName.get('ip-doc_address_city', 'n/a')
 				orgAbb = affName.get('ip-doc_afdispname', 'n/a')
