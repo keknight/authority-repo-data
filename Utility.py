@@ -62,7 +62,10 @@ def append_df_to_excel(filename, df, sheet_name='Sheet1', startrow=None, **to_ex
 		writer.book = load_workbook(filename)
         # get the last row in the existing Excel sheet
 		if not startrow and sheet_name in writer.book.sheetnames:
-			startrow = writer.book[sheet_name].max_row
+			startrow = writer.book[sheet_name].max_row	
+		# don't write headings over and over
+		if writer.book[sheet_name].max_row > 1:
+			to_excel_kwargs.update({'header' : False})
 
         # copy existing sheets
 		writer.sheets = dict((ws.title, ws) for ws in writer.book.worksheets)
